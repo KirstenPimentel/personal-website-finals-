@@ -1,59 +1,54 @@
-const API_BASE = "https://personal-website-finals-api.onrender.com";
+// personal-website-finals/js/lyrics.js
+// Vue app for Lyrics Likes (requires window.sb from supabase.js)
+const { createApp, ref, onMounted } = Vue;
 
-Vue.createApp({
-  data() {
-    return {
-      tab: "post",
-      form: {
-        title: "",
-        artist: "",
-        lyrics: "",
-        posted_by: ""
-      },
-      items: [],
-      loading: false,
-      error: "",
-      success: ""
-    };
-  },
-  methods: {
-    async submit() {
-      this.error = "";
-      this.success = "";
-      const { title, artist, lyrics, posted_by } = this.form;
-      if (!title || !artist || !lyrics || !posted_by) {
-        this.error = "All fields are required.";
-        return;
+createApp({
+  setup() {
+    const posts = ref([]);
+    const loading = ref(true);
+
+    async function loadPosts() {
+      loading.value = true;
+
+      const { data, error } = await sb
+        .from('lyrics_posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        alert('Failed to load posts. Check Supabase settings & policies.');
+      } else {
+        posts.value = (data || []).map(p => ({ ...p, liking: false }));
       }
+      loading.value = false;
+    }
+
+    async function like(post) {
       try {
-        this.loading = true;
-        await axios.post(`${API_BASE}/lyrics`, { title, artist, lyrics, posted_by });
-        this.success = "Lyrics posted successfully!";
-        this.form = { title: "", artist: "", lyrics: "", posted_by: "" };
-        await this.fetchItems();
-        this.tab = "list";
-      } catch (e) {
-        console.error(e);
-        this.error = "Failed to post lyrics. Please try again.";
+        post.liking = true;
+
+        // Optimistic UI update
+        const before = post.likes;
+        post.likes = before + 1;
+
+        const { data, error } = await sb.rpc('increment_likes', { post_id: post.id });
+
+        if (error) {
+          // rollback on error
+          post.likes = before;
+          console.error(error);
+          alert('Failed to like. Please try again.');
+        } else {
+          // server is source of truth
+          post.likes = data;
+        }
       } finally {
-        this.loading = false;
-      }
-    },
-    async fetchItems() {
-      this.error = "";
-      try {
-        this.loading = true;
-        const res = await axios.get(`${API_BASE}/lyrics`);
-        this.items = res.data || [];
-      } catch (e) {
-        console.error(e);
-        this.error = "Failed to load lyrics posts.";
-      } finally {
-        this.loading = false;
+        post.liking = false;
       }
     }
-  },
-  mounted() {
-    this.fetchItems();
+
+    onMounted(loadPosts);
+    return { posts, loading, like };
   }
-}).mount("#lyricsApp");
+}).mount('#lyricsApp');
