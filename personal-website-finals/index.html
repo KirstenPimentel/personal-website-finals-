@@ -2,47 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The 1975 Fan Website</title>
 
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
   <!-- HEADER -->
-  <div class="header">
-    Personal Profile Web Page
-  </div>
+  <div class="header">Personal Profile Web Page</div>
 
-  <!-- NAVIGATION -->
+  <!-- NAV -->
   <nav>
     <a href="index.html">Home</a>
     <a href="gallery.html">1975 Concert Gallery</a>
     <a href="apcrams.html">APC RAMS</a>
-    <a href="lyrics.html">Post Lyrics</a>
+    <a href="lyrics.html">Lyrics (❤️)</a>
     <a href="resources.html">Resources</a>
-    <a href="https://open.spotify.com/playlist/2HsUnenU2argKszYFjNoIK?si=33c80e5e781946fc" target="_blank" rel="noopener">
-      Spotify Playlist 🎧
-    </a>
+    <a href="https://open.spotify.com/playlist/2HsUnenU2argKszYFjNoIK?si=33c80e5e781946fc" target="_blank" rel="noopener">Spotify Playlist 🎧</a>
+
+    <button id="themeToggle">🌙 Dark</button>
   </nav>
 
-  <!-- MAIN LAYOUT -->
+  <!-- MAIN -->
   <div class="row">
 
-    <!-- LEFT: PROFILE IMAGE -->
+    <!-- LEFT -->
     <div class="profile-image">
       <img src="images/profile.jpg" alt="My Profile Picture" />
     </div>
 
-    <!-- CENTER: ABOUT ME -->
+    <!-- CENTER -->
     <div class="main">
       <h1>About Me</h1>
 
       <p><strong>Name:</strong> Kirsten Evan M. Pimentel</p>
       <p><strong>Education:</strong> Asia Pacific College</p>
-      <p><strong>Course:</strong> BSIT – Mobile &amp; Internet Technologies</p>
+      <p><strong>Course:</strong> BSIT – Mobile & Internet Technologies</p>
 
       <p class="about-text">
         In my free time, I enjoy playing online games with my friends such as
@@ -56,7 +53,7 @@
       </p>
     </div>
 
-    <!-- RIGHT: THE 1975 HIGHLIGHTS -->
+    <!-- RIGHT -->
     <div class="right">
       <h3>Favorite The 1975 Highlights</h3>
 
@@ -70,9 +67,7 @@
       “If you can't survive, just try”</p>
 
       <p><strong>Go-to Emotion:</strong> Chill</p>
-
       <p><strong>Never Skip:</strong> Heart Out</p>
-
       <p><strong>Recommendation:</strong> She's American</p>
     </div>
 
@@ -81,10 +76,8 @@
   <!-- SPOTIFY -->
   <iframe
     style="border-radius:12px"
-    src="https://open.spotify.com/embed/playlist/2HsUnenU2argKszYFjNoIK?utm_source=generator"
-    width="100%"
-    height="380"
-    frameborder="0"
+    src="https://open.spotify.com/embed/playlist/2HsUnenU2argKszYFjNoIK"
+    width="100%" height="380" frameborder="0"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
     loading="lazy">
   </iframe>
@@ -92,20 +85,13 @@
   <!-- GUESTBOOK -->
   <section id="guestbookApp" class="guestbook">
     <h2>Guestbook</h2>
-
     <input v-model="name" placeholder="Your name" />
     <textarea v-model="comment" placeholder="Your comment"></textarea>
-    <button @click="addComment" :disabled="loading">Post</button>
-
-    <p v-if="error" style="color:#c00; margin-top:8px;">{{ error }}</p>
-    <p v-if="loading">Loading...</p>
+    <button @click="addComment">Post</button>
 
     <ul>
-      <li v-for="entry in entries" :key="entry.id">
+      <li v-for="entry in entries">
         <strong>{{ entry.name }}:</strong> {{ entry.comment }}
-        <span v-if="entry.created_at" style="color:#666; font-size:12px;">
-          • {{ new Date(entry.created_at).toLocaleString() }}
-        </span>
       </li>
     </ul>
   </section>
@@ -116,5 +102,6 @@
   </div>
 
   <script src="js/app.js"></script>
+  <script src="js/theme.js"></script>
 </body>
 </html>

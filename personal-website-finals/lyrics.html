@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lyrics Posts</title>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Vue -->
+  <link rel="stylesheet" href="css/style.css" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <!-- Supabase SDK -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -22,19 +19,32 @@
     <a href="apcrams.html">APC RAMS</a>
     <a href="lyrics.html">Lyrics (❤️)</a>
     <a href="resources.html">Resources</a>
-
     <button id="themeToggle">🌙 Dark</button>
   </nav>
 
   <section id="lyricsApp" class="main" style="margin:20px;">
     <h2 class="center">Tap the heart to like a lyric</h2>
 
+    <!-- Post-a-lyric form -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3 style="margin-top:0;">Post a lyric</h3>
+      <input v-model="newTitle" placeholder="Title (e.g., Heart Out)" />
+      <textarea v-model="newExcerpt" placeholder="Excerpt (optional)"></textarea>
+      <button @click="createPost" :disabled="creating">
+        <span v-if="!creating">➕ Add</span>
+        <span v-else>⏳ Adding…</span>
+      </button>
+    </div>
+
+    <!-- List -->
     <div v-if="loading">Loading posts…</div>
 
     <div v-else>
       <div v-for="post in posts" :key="post.id" class="card" style="margin-bottom:16px;">
         <h3 style="margin-top:0;">{{ post.title }}</h3>
-        <p style="color: var(--muted-text); margin-top: 6px;">{{ post.excerpt }}</p>
+        <p v-if="post.excerpt" style="color: var(--muted-text); margin-top: 6px;">
+          {{ post.excerpt }}
+        </p>
 
         <button @click="like(post)" :disabled="post.liking" aria-label="Like this post">
           <span v-if="!post.liking">❤️</span>
@@ -49,7 +59,7 @@
     <a href="index.html">Back to Home</a>
   </div>
 
-  <!-- Order matters: SDK → your Supabase init → your lyrics app → (optional) theme -->
+  <!-- ORDER MATTERS -->
   <script src="js/supabase.js"></script>
   <script src="js/lyrics.js"></script>
   <script src="js/theme.js"></script>
