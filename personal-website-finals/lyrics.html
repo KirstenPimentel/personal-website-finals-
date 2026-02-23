@@ -4,8 +4,10 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Post Lyrics</title>
+
   <link rel="stylesheet" href="css/style.css"/>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <div class="header">Post a Lyrics</div>
@@ -18,12 +20,47 @@
     <a href="resources.html">Resources</a>
   </nav>
 
-  <main id="lyricsApp" class="main" style="margin:20px;">
-    <!-- Placeholder UI; we’ll implement tabs and API wiring next -->
-    <h2 class="center">Coming up: Post Lyrics &amp; Who Posted</h2>
-    <p class="center">We’ll add the form and list here in the next step.</p>
+  <main id="lyricsApp" class="main" style="margin:20px; max-width:980px;">
+    <!-- Tabs -->
+    <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+      <button :class="{active: tab==='post'}" @click="tab='post'">Post Lyrics</button>
+      <button :class="{active: tab==='list'}" @click="tab='list'">Who Posted</button>
+    </div>
+
+    <!-- Post Form -->
+    <section v-if="tab==='post'">
+      <input v-model="form.title" placeholder="Song Title">
+      <input v-model="form.artist" placeholder="Artist / Band">
+      <textarea v-model="form.lyrics" placeholder="Lyrics" rows="8"></textarea>
+      <input v-model="form.posted_by" placeholder="Your name">
+      <button @click="submit" :disabled="loading">Submit</button>
+
+      <p v-if="error" style="color:#c00; margin-top:8px;">{{ error }}</p>
+      <p v-if="success" style="color:#0a0; margin-top:8px;">{{ success }}</p>
+    </section>
+
+    <!-- List -->
+    <section v-if="tab==='list'">
+      <p v-if="loading">Loading...</p>
+      <p v-if="error" style="color:#c00">{{ error }}</p>
+
+      <div v-for="item in items" :key="item.id" style="border:2px solid #000; padding:16px; margin:12px 0; background:#fff">
+        <h3 style="margin:0 0 8px 0">
+          {{ item.title }} — <small>{{ item.artist }}</small>
+        </h3>
+        <pre style="white-space:pre-wrap; font-family:inherit; background:#f9f9f9; padding:12px; border:1px solid #ddd;">{{ item.lyrics }}</pre>
+        <p style="margin-top:8px;">
+          <strong>Posted by:</strong> {{ item.posted_by }}
+          <span v-if="item.created_at" style="color:#666; font-size:12px;">
+            • {{ new Date(item.created_at).toLocaleString() }}
+          </span>
+        </p>
+      </div>
+    </section>
   </main>
 
   <div class="footer">Back to <a href="index.html">Home</a></div>
+
+  <script src="js/lyrics.js"></script>
 </body>
 </html>

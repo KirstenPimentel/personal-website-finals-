@@ -201,3 +201,7 @@ button:hover {
     height: 250px;
   }
 }
+
+button.active {
+  outline: 2px solid #000;
+}

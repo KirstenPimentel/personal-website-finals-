@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The 1975 Fan Website</title>
 
   <link rel="stylesheet" href="css/style.css"/>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
@@ -29,6 +30,7 @@
 
   <!-- MAIN LAYOUT -->
   <div class="row">
+
     <!-- LEFT: PROFILE IMAGE -->
     <div class="profile-image">
       <img src="images/profile.jpg" alt="My Profile Picture">
@@ -73,6 +75,7 @@
 
       <p><strong>Recommendation:</strong> She's American</p>
     </div>
+
   </div>
 
   <!-- SPOTIFY -->
@@ -82,7 +85,7 @@
     width="100%"
     height="380"
     frameborder="0"
-    allowfullscreen>
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
   </iframe>
 
   <!-- GUESTBOOK -->
@@ -91,11 +94,17 @@
 
     <input v-model="name" placeholder="Your name">
     <textarea v-model="comment" placeholder="Your comment"></textarea>
-    <button @click="addComment">Post</button>
+    <button @click="addComment" :disabled="loading">Post</button>
+
+    <p v-if="error" style="color:#c00; margin-top:8px;">{{ error }}</p>
+    <p v-if="loading">Loading...</p>
 
     <ul>
-      <li v-for="entry in entries">
+      <li v-for="entry in entries" :key="entry.id">
         <strong>{{ entry.name }}:</strong> {{ entry.comment }}
+        <span v-if="entry.created_at" style="color:#666; font-size:12px;">
+          • {{ new Date(entry.created_at).toLocaleString() }}
+        </span>
       </li>
     </ul>
   </section>

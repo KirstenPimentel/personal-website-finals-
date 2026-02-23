@@ -1,3 +1,4 @@
+// ===== 1975 Gallery app (unchanged local gallery) =====
 Vue.createApp({
   data() {
     return {
@@ -13,24 +14,54 @@ Vue.createApp({
   }
 }).mount("#galleryApp");
 
+// ===== Guestbook app (now uses backend API) =====
+const API_BASE = "https://personal-website-finals-api.onrender.com"; // <— change if your URL differs
+
 Vue.createApp({
   data() {
     return {
       name: "",
       comment: "",
-      entries: []
+      entries: [],
+      loading: false,
+      error: ""
     };
   },
   methods: {
-    addComment() {
-      if (this.name && this.comment) {
-        this.entries.push({
+    async addComment() {
+      this.error = "";
+      if (!this.name || !this.comment) {
+        this.error = "Please enter your name and a comment.";
+        return;
+      }
+      try {
+        this.loading = true;
+        await axios.post(`${API_BASE}/guestbook`, {
           name: this.name,
           comment: this.comment
         });
         this.name = "";
         this.comment = "";
+        await this.fetchEntries();
+      } catch (e) {
+        console.error(e);
+        this.error = "Failed to post comment. Please try again.";
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchEntries() {
+      this.error = "";
+      try {
+        const res = await axios.get(`${API_BASE}/guestbook`);
+        this.entries = res.data || [];
+      } catch (e) {
+        console.error(e);
+        this.error = "Failed to load guestbook entries.";
       }
     }
+  },
+  mounted() {
+    this.fetchEntries();
   }
 }).mount("#guestbookApp");
