@@ -1,6 +1,6 @@
-// ===== 1975 Gallery app (unchanged local gallery) =====
 const API_BASE = "https://personal-website-finals-api.onrender.com";
 
+// 1975 Gallery app (kept as-is)
 Vue.createApp({
   data() {
     return {
@@ -16,9 +16,7 @@ Vue.createApp({
   }
 }).mount("#galleryApp");
 
-// ===== Guestbook app (now uses backend API) =====
-const API_BASE = "https://personal-website-finals-api.onrender.com"; // <— change if your URL differs
-
+// Guestbook app (uses API_BASE)
 Vue.createApp({
   data() {
     return {
