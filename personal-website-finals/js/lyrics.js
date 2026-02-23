@@ -1,4 +1,4 @@
-const API_BASE = "https://personal-website-finals-api.onrender.com"; // <— change if your URL differs
+const API_BASE = "https://personal-website-finals-api.onrender.com";
 
 Vue.createApp({
   data() {
