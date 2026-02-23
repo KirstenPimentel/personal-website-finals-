@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Post Lyrics</title>
 
-  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/style.css" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -29,10 +29,10 @@
 
     <!-- Post Form -->
     <section v-if="tab==='post'">
-      <input v-model="form.title" placeholder="Song Title">
-      <input v-model="form.artist" placeholder="Artist / Band">
+      <input v-model="form.title" placeholder="Song Title" />
+      <input v-model="form.artist" placeholder="Artist / Band" />
       <textarea v-model="form.lyrics" placeholder="Lyrics" rows="8"></textarea>
-      <input v-model="form.posted_by" placeholder="Your name">
+      <input v-model="form.posted_by" placeholder="Your name" />
       <button @click="submit" :disabled="loading">Submit</button>
 
       <p v-if="error" style="color:#c00; margin-top:8px;">{{ error }}</p>

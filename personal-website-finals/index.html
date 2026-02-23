@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The 1975 Fan Website</title>
 
-  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/style.css" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -23,7 +23,7 @@
     <a href="apcrams.html">APC RAMS</a>
     <a href="lyrics.html">Post Lyrics</a>
     <a href="resources.html">Resources</a>
-    <a href="https://open.spotify.com/playlist/2HsUnenU2argKszYFjNoIK?si=33c80e5e781946fc" target="_blank">
+    <a href="https://open.spotify.com/playlist/2HsUnenU2argKszYFjNoIK?si=33c80e5e781946fc" target="_blank" rel="noopener">
       Spotify Playlist 🎧
     </a>
   </nav>
@@ -33,7 +33,7 @@
 
     <!-- LEFT: PROFILE IMAGE -->
     <div class="profile-image">
-      <img src="images/profile.jpg" alt="My Profile Picture">
+      <img src="images/profile.jpg" alt="My Profile Picture" />
     </div>
 
     <!-- CENTER: ABOUT ME -->
@@ -81,18 +81,19 @@
   <!-- SPOTIFY -->
   <iframe
     style="border-radius:12px"
-    src="https://open.spotify.com/embed/playlist/2HsUnenU2argKszYFjNoIK"
+    src="https://open.spotify.com/embed/playlist/2HsUnenU2argKszYFjNoIK?utm_source=generator"
     width="100%"
     height="380"
     frameborder="0"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy">
   </iframe>
 
   <!-- GUESTBOOK -->
   <section id="guestbookApp" class="guestbook">
     <h2>Guestbook</h2>
 
-    <input v-model="name" placeholder="Your name">
+    <input v-model="name" placeholder="Your name" />
     <textarea v-model="comment" placeholder="Your comment"></textarea>
     <button @click="addComment" :disabled="loading">Post</button>
 
