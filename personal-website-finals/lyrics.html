@@ -8,7 +8,7 @@
   <!-- Site CSS -->
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- (Page-scoped) tiny styles for the tab buttons -->
+  <!-- (Page-scoped) small styles -->
   <style>
     .tabbar { display:flex; gap:8px; margin-bottom:12px; }
     .tabbtn {
@@ -19,11 +19,33 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .tabbtn.active {
-      outline: 2px solid var(--border);
-      box-shadow: inset 0 0 0 1px var(--card);
-    }
+    .tabbtn.active { outline: 2px solid var(--border); }
+
     .muted { color: var(--muted-text); }
+
+    /* Pretty sub-hero header */
+    .subhero {
+      text-align: center;
+      padding: 18px 12px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 4px;
+    }
+    .subhero h2 {
+      margin: 0 0 6px 0;
+      letter-spacing: 0.5px;
+    }
+    .subhero p { margin: 0; }
+
+    /* Lyrics block style */
+    blockquote.lyric {
+      margin: 10px 0 0 0;
+      padding: 10px 12px;
+      border-left: 4px solid var(--border);
+      background: var(--card-alt);
+      white-space: pre-wrap; /* respect new lines */
+    }
   </style>
 
   <!-- Vue (CDN) -->
@@ -46,7 +68,11 @@
   </nav>
 
   <section id="lyricsApp" class="main" style="margin:20px;">
-    <h2 class="center">Tap the heart to like a lyric</h2>
+    <!-- Beautiful header -->
+    <header class="subhero">
+      <h2>Favorite Lyrics &amp; Fan Posts</h2>
+      <p class="muted">Share the lines that hit hardest — then show some ❤️ to others.</p>
+    </header>
 
     <!-- Tabs -->
     <div class="tabbar">
@@ -90,10 +116,12 @@
             </em>
           </p>
 
-          <p v-if="post.excerpt" class="muted" style="white-space: pre-wrap; margin-top: 6px;">
-            {{ post.excerpt }}
-          </p>
+          <!-- FAVORITE LYRICS -->
+          <blockquote v-if="displayExcerpt(post)" class="lyric">
+            {{ displayExcerpt(post) }}
+          </blockquote>
 
+          <!-- LIKE BUTTON -->
           <button @click="like(post)" :disabled="post.liking" aria-label="Like this post" style="margin-top:8px;">
             <span v-if="!post.liking">❤️</span>
             <span v-else>⏳</span>
@@ -105,7 +133,7 @@
   </section>
 
   <div class="footer">
-    <a href="index.html" style="color: inherit;">Back to Home</a>
+    <a href="index.html">Back to Home</a>
   </div>
 
   <!-- ORDER MATTERS -->

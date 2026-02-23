@@ -1,3 +1,4 @@
+// personal-website-finals/js/lyrics.js
 // Vue app for "Post Lyrics" + "Who Posted" + Likes (uses window.sb from supabase.js)
 const { createApp, ref, onMounted } = Vue;
 
@@ -13,7 +14,7 @@ createApp({
     // Form fields
     const newTitle = ref("");
     const newArtist = ref("");
-    const newExcerpt = ref("");
+    const newExcerpt = ref("");     // we store lyrics text in 'excerpt' column
     const newPostedBy = ref("");
     const creating = ref(false);
 
@@ -22,12 +23,17 @@ createApp({
       catch { return ""; }
     }
 
+    // Safely display lyrics text (supports either 'excerpt' or 'lyrics' column)
+    function displayExcerpt(post) {
+      return (post && (post.excerpt || post.lyrics)) || "";
+    }
+
     async function loadPosts() {
       loading.value = true;
 
       const { data, error } = await sb
         .from('lyrics_posts')
-        .select('*')
+        .select('*') // if 'lyrics' column exists, it will be present in the row; otherwise undefined
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -68,7 +74,7 @@ createApp({
       }
       creating.value = true;
 
-      // Map "Lyrics" field to the 'excerpt' column
+      // Map "Lyrics" textarea to 'excerpt' column (works with your current schema)
       const row = {
         title: newTitle.value.trim(),
         artist: newArtist.value.trim() || null,
@@ -102,7 +108,7 @@ createApp({
       currentTab, posts, loading,
       newTitle, newArtist, newExcerpt, newPostedBy, creating,
       // methods
-      createPost, like, fmt
+      createPost, like, fmt, displayExcerpt
     };
   }
 }).mount('#lyricsApp');
