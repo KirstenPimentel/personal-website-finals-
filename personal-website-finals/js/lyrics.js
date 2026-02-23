@@ -1,15 +1,26 @@
-// Vue app for Lyrics Likes + Create Post (uses window.sb from supabase.js)
+// Vue app for "Post Lyrics" + "Who Posted" + Likes (uses window.sb from supabase.js)
 const { createApp, ref, onMounted } = Vue;
 
 createApp({
   setup() {
+    // Tabs
+    const currentTab = ref('post'); // 'post' | 'who'
+
+    // List
     const posts = ref([]);
     const loading = ref(true);
 
-    // For "Post a lyric"
+    // Form fields
     const newTitle = ref("");
+    const newArtist = ref("");
     const newExcerpt = ref("");
+    const newPostedBy = ref("");
     const creating = ref(false);
+
+    function fmt(s) {
+      try { return new Date(s).toLocaleString(); }
+      catch { return ""; }
+    }
 
     async function loadPosts() {
       loading.value = true;
@@ -52,17 +63,20 @@ createApp({
 
     async function createPost() {
       if (!newTitle.value.trim()) {
-        alert("Title is required.");
+        alert("Song Title is required.");
         return;
       }
       creating.value = true;
 
-      const insertRow = {
+      // Map "Lyrics" field to the 'excerpt' column
+      const row = {
         title: newTitle.value.trim(),
-        excerpt: newExcerpt.value.trim() || null
+        artist: newArtist.value.trim() || null,
+        excerpt: newExcerpt.value.trim() || null,
+        posted_by: newPostedBy.value.trim() || null
       };
 
-      const { error } = await sb.from('lyrics_posts').insert([insertRow]);
+      const { error } = await sb.from('lyrics_posts').insert([row]);
 
       creating.value = false;
 
@@ -72,12 +86,23 @@ createApp({
         return;
       }
 
+      // Clear & switch to "Who Posted" so they see their post immediately
       newTitle.value = "";
+      newArtist.value = "";
       newExcerpt.value = "";
+      newPostedBy.value = "";
+
       await loadPosts();
+      currentTab.value = 'who';
     }
 
     onMounted(loadPosts);
-    return { posts, loading, like, newTitle, newExcerpt, creating, createPost };
+    return {
+      // state
+      currentTab, posts, loading,
+      newTitle, newArtist, newExcerpt, newPostedBy, creating,
+      // methods
+      createPost, like, fmt
+    };
   }
 }).mount('#lyricsApp');
