@@ -4,37 +4,39 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>1975 Concert Gallery</title>
+
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+
   <div class="header">1975 Concert Gallery</div>
 
   <nav>
     <a href="index.html">Home</a>
     <a href="gallery.html">1975 Concert Gallery</a>
     <a href="apcrams.html">APC RAMS</a>
-    <a href="lyrics.html">Post Lyrics</a>
+    <a href="lyrics.html">Post a Lyrics</a>
     <a href="resources.html">Resources</a>
-    <a href="https://open.spotify.com/playlist/2HsUnenU2argKszYFjNoIK?si=33c80e5e781946fc" target="_blank" rel="noopener">
-      Spotify Playlist 🎧
-    </a>
+
+    <button id="themeToggle">🌙 Dark</button>
   </nav>
 
-  <section id="galleryApp">
+  <section>
     <h2 class="center">Compilation of Concert Pictures</h2>
+
     <div class="gallery">
-      <img src="images/concert1.jpg" onclick="openLightbox(this)" alt="concert1" />
-      <img src="images/concert2.jpg" onclick="openLightbox(this)" alt="concert2" />
-      <img src="images/concert3.jpg" onclick="openLightbox(this)" alt="concert3" />
-      <img src="images/concert4.jpg" onclick="openLightbox(this)" alt="concert4" />
-      <img src="images/concert5.jpg" onclick="openLightbox(this)" alt="concert5" />
-      <img src="images/concert6.jpg" onclick="openLightbox(this)" alt="concert6" />
+      <img src="images/concert1.jpg" onclick="openLightbox(this)">
+      <img src="images/concert2.jpg" onclick="openLightbox(this)">
+      <img src="images/concert3.jpg" onclick="openLightbox(this)">
+      <img src="images/concert4.jpg" onclick="openLightbox(this)">
+      <img src="images/concert5.jpg" onclick="openLightbox(this)">
+      <img src="images/concert6.jpg" onclick="openLightbox(this)">
     </div>
   </section>
 
   <!-- LIGHTBOX -->
   <div id="lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img" alt="lightbox" />
+    <img id="lightbox-img" alt="Expanded image">
   </div>
 
   <div class="footer">
@@ -42,5 +44,6 @@
   </div>
 
   <script src="js/lightbox.js"></script>
+  <script src="js/theme.js"></script>
 </body>
 </html>

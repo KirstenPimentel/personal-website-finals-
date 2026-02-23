@@ -5,11 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lyrics Posts</title>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Vue -->
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- (Page-scoped) tiny styles for the tab buttons -->
+  <style>
+    .tabbar { display:flex; gap:8px; margin-bottom:12px; }
+    .tabbtn {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .tabbtn.active {
+      outline: 2px solid var(--border);
+      box-shadow: inset 0 0 0 1px var(--card);
+    }
+    .muted { color: var(--muted-text); }
+  </style>
+
+  <!-- Vue (CDN) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <!-- Supabase SDK -->
+  <!-- Supabase SDK (CDN) -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -20,7 +39,7 @@
     <a href="index.html">Home</a>
     <a href="gallery.html">1975 Concert Gallery</a>
     <a href="apcrams.html">APC RAMS</a>
-    <a href="lyrics.html">Lyrics (❤️)</a>
+    <a href="lyrics.html">Post a Lyrics</a>
     <a href="resources.html">Resources</a>
 
     <button id="themeToggle">🌙 Dark</button>
@@ -29,27 +48,67 @@
   <section id="lyricsApp" class="main" style="margin:20px;">
     <h2 class="center">Tap the heart to like a lyric</h2>
 
-    <div v-if="loading">Loading posts…</div>
+    <!-- Tabs -->
+    <div class="tabbar">
+      <button class="tabbtn" :class="{active: currentTab==='post'}" @click="currentTab='post'">Post Lyrics</button>
+      <button class="tabbtn" :class="{active: currentTab==='who'}"  @click="currentTab='who'">Who Posted</button>
+    </div>
 
+    <!-- POST LYRICS TAB -->
+    <div v-if="currentTab==='post'" class="card" style="margin-bottom:16px;">
+      <h3 style="margin-top:0;">Post a lyric</h3>
+
+      <input v-model="newTitle" placeholder="Song Title" />
+      <input v-model="newArtist" placeholder="Artist / Band" />
+      <textarea v-model="newExcerpt" placeholder="Lyrics" rows="6"></textarea>
+      <input v-model="newPostedBy" placeholder="Your name" />
+
+      <button @click="createPost" :disabled="creating" style="margin-top:8px;">
+        <span v-if="!creating">Submit</span>
+        <span v-else>⏳ Submitting…</span>
+      </button>
+
+      <p class="muted" style="margin-top:8px;">Title is required; Artist / Lyrics / Your name are optional.</p>
+    </div>
+
+    <!-- WHO POSTED TAB -->
     <div v-else>
-      <div v-for="post in posts" :key="post.id" class="card" style="margin-bottom:16px;">
-        <h3 style="margin-top:0;">{{ post.title }}</h3>
-        <p style="color: var(--muted-text); margin-top: 6px;">{{ post.excerpt }}</p>
+      <div v-if="loading">Loading posts…</div>
 
-        <button @click="like(post)" :disabled="post.liking" aria-label="Like this post">
-          <span v-if="!post.liking">❤️</span>
-          <span v-else>⏳</span>
-          <span style="margin-left:8px;">{{ post.likes }}</span>
-        </button>
+      <div v-else>
+        <div v-if="!posts.length" class="card">No posts yet. Be the first to post a lyric!</div>
+
+        <div v-for="post in posts" :key="post.id" class="card" style="margin-bottom:16px;">
+          <h3 style="margin:0 0 6px 0;">{{ post.title }}</h3>
+
+          <p v-if="post.artist" style="margin:0;"><strong>Artist:</strong> {{ post.artist }}</p>
+          <p class="muted" style="margin:4px 0 6px 0;" v-if="post.posted_by || post.created_at">
+            <em>
+              <span v-if="post.posted_by">Posted by {{ post.posted_by }}</span>
+              <span v-if="post.posted_by && post.created_at"> • </span>
+              <span v-if="post.created_at">{{ fmt(post.created_at) }}</span>
+            </em>
+          </p>
+
+          <p v-if="post.excerpt" class="muted" style="white-space: pre-wrap; margin-top: 6px;">
+            {{ post.excerpt }}
+          </p>
+
+          <button @click="like(post)" :disabled="post.liking" aria-label="Like this post" style="margin-top:8px;">
+            <span v-if="!post.liking">❤️</span>
+            <span v-else>⏳</span>
+            <span style="margin-left:8px;">{{ post.likes }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
 
   <div class="footer">
-    <a href="index.html">Back to Home</a>
+    <a href="index.html" style="color: inherit;">Back to Home</a>
   </div>
 
-  <!-- Order matters: SDK → your Supabase init → your lyrics app → (optional) theme -->
+  <!-- ORDER MATTERS -->
   <script src="js/supabase.js"></script>
   <script src="js/lyrics.js"></script>
   <script src="js/theme.js"></script>

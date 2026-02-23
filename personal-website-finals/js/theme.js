@@ -1,4 +1,3 @@
-// personal-website-finals/js/theme.js
 (function () {
   const root = document.documentElement;
   const btn = document.getElementById('themeToggle');
