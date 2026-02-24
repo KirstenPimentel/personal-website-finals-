@@ -14,7 +14,7 @@ createApp({
     // Form fields
     const newTitle = ref("");
     const newArtist = ref("");
-    const newExcerpt = ref("");     // bound to textarea; we'll store in DB as 'lyrics'
+    const newExcerpt = ref("");     // bound to textarea; stored in DB as 'lyrics'
     const newPostedBy = ref("");
     const creating = ref(false);
 
@@ -23,9 +23,17 @@ createApp({
       catch { return ""; }
     }
 
-    // Safely display lyrics text from the 'lyrics' column
+    // Safely display lyrics text from the 'lyrics' column.
+    // Strip any surrounding quotes so CSS smart quotes don’t double up.
     function displayExcerpt(post) {
-      return (post && post.lyrics) || "";
+      const raw = (post && (post.lyrics ?? "")).trim();
+
+      // Remove opening & closing straight/curly quotes if present
+      const withoutOuterQuotes = raw
+        .replace(/^["“”'‘’]+/, "")   // opening quotes
+        .replace(/["“”'‘’]+$/, "");  // closing quotes
+
+      return withoutOuterQuotes;
     }
 
     async function loadPosts() {

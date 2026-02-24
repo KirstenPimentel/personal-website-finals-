@@ -22,6 +22,8 @@
     }
     .tabbtn.active { outline: 2px solid var(--border); }
     .muted { color: var(--muted-text); }
+
+    /* Pretty sub-hero header */
     .subhero {
       text-align: center;
       padding: 18px 12px;
@@ -32,12 +34,31 @@
     }
     .subhero h2 { margin: 0 0 6px 0; letter-spacing: 0.5px; }
     .subhero p { margin: 0; }
+
+    /* Lyrics block style (with smart quotes) */
     blockquote.lyric {
       margin: 10px 0 0 0;
       padding: 10px 12px;
       border-left: 4px solid var(--border);
       background: var(--card-alt);
       white-space: pre-wrap; /* respect new lines */
+      position: relative;
+      font-style: italic;
+    }
+    /* Add opening and closing curly quotes visually */
+    blockquote.lyric::before,
+    blockquote.lyric::after {
+      color: var(--muted-text);
+      font-weight: 600;
+      font-style: normal;
+    }
+    blockquote.lyric::before {
+      content: "“";
+      margin-right: 4px;
+    }
+    blockquote.lyric::after {
+      content: "”";
+      margin-left: 4px;
     }
   </style>
 
@@ -110,6 +131,7 @@
           </p>
 
           <!-- FAVORITE LYRICS -->
+          <p style="margin:8px 0 0 0;"><strong>Favorite Lyric:</strong></p>
           <blockquote v-if="displayExcerpt(post)" class="lyric">
             {{ displayExcerpt(post) }}
           </blockquote>
