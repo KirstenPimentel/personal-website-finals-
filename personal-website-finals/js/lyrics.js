@@ -1,4 +1,4 @@
-// personal-website-finals/js/lyrics.js
+// /js/lyrics.js
 // Vue app for "Post Lyrics" + "Who Posted" + Likes (uses window.sb from supabase.js)
 const { createApp, ref, onMounted } = Vue;
 
@@ -14,7 +14,7 @@ createApp({
     // Form fields
     const newTitle = ref("");
     const newArtist = ref("");
-    const newExcerpt = ref("");     // we store lyrics text in 'excerpt' column
+    const newExcerpt = ref("");     // bound to textarea; we'll store in DB as 'lyrics'
     const newPostedBy = ref("");
     const creating = ref(false);
 
@@ -23,9 +23,9 @@ createApp({
       catch { return ""; }
     }
 
-    // Safely display lyrics text (supports either 'excerpt' or 'lyrics' column)
+    // Safely display lyrics text from the 'lyrics' column
     function displayExcerpt(post) {
-      return (post && (post.excerpt || post.lyrics)) || "";
+      return (post && post.lyrics) || "";
     }
 
     async function loadPosts() {
@@ -33,34 +33,59 @@ createApp({
 
       const { data, error } = await sb
         .from('lyrics_posts')
-        .select('*') // if 'lyrics' column exists, it will be present in the row; otherwise undefined
+        .select('id, title, artist, lyrics, posted_by, created_at, likes')
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error(error);
-        alert('Failed to load posts. Check Supabase settings & policies.');
+        console.error('[Supabase select error]', {
+          code: error.code, message: error.message, details: error.details, hint: error.hint
+        });
+        alert(`Failed to load posts: ${error.message}`);
       } else {
-        posts.value = (data || []).map(p => ({ ...p, liking: false }));
+        posts.value = (data || []).map(p => ({ ...p, liking: false, likes: p.likes ?? 0 }));
       }
       loading.value = false;
     }
 
     async function like(post) {
+      if (!post?.id) return;
       try {
         post.liking = true;
 
         // Optimistic UI
-        const before = post.likes;
+        const before = post.likes ?? 0;
         post.likes = before + 1;
 
-        const { data, error } = await sb.rpc('increment_likes', { post_id: post.id });
+        // 1) Try RPC (if you've created the function)
+        let rpcError = null;
+        try {
+          const { data, error } = await sb.rpc('increment_likes', { post_id: post.id });
+          if (error) rpcError = error;
+          else if (typeof data === 'number') {
+            post.likes = data; // server truth
+            return;
+          }
+        } catch (e) {
+          rpcError = e;
+        }
+
+        // 2) Fallback: plain update if RPC is missing
+        const { data, error } = await sb
+          .from('lyrics_posts')
+          .update({ likes: before + 1 })
+          .eq('id', post.id)
+          .select('likes')
+          .single();
 
         if (error) {
           post.likes = before; // rollback
-          console.error(error);
+          console.error('[Supabase like error]', {
+            rpcError,
+            code: error.code, message: error.message, details: error.details, hint: error.hint
+          });
           alert('Failed to like. Please try again.');
         } else {
-          post.likes = data; // server truth
+          post.likes = data?.likes ?? before + 1;
         }
       } finally {
         post.liking = false;
@@ -74,25 +99,29 @@ createApp({
       }
       creating.value = true;
 
-      // Map "Lyrics" textarea to 'excerpt' column (works with your current schema)
+      // ✅ Store textarea value in the 'lyrics' column
       const row = {
         title: newTitle.value.trim(),
         artist: newArtist.value.trim() || null,
-        excerpt: newExcerpt.value.trim() || null,
+        lyrics: newExcerpt.value.trim() || null,
         posted_by: newPostedBy.value.trim() || null
       };
 
-      const { error } = await sb.from('lyrics_posts').insert([row]);
+      const { data, error } = await sb.from('lyrics_posts').insert([row]).select('*');
 
       creating.value = false;
 
       if (error) {
-        console.error(error);
-        alert('Failed to add post. Check Insert policy in Supabase.');
+        console.error('[Supabase insert error]', {
+          code: error.code, message: error.message, details: error.details, hint: error.hint
+        });
+        alert(`Failed to add post: ${error.message}`);
         return;
       }
 
-      // Clear & switch to "Who Posted" so they see their post immediately
+      console.log('Inserted row(s):', data);
+
+      // Clear & refresh
       newTitle.value = "";
       newArtist.value = "";
       newExcerpt.value = "";
